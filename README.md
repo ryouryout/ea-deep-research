@@ -51,7 +51,25 @@ npm start
 3. **深層リサーチ**: 追加検索と詳細分析を3段階以上実施
 4. **提案骨子作成**: 分析結果から提案スライドを自動生成
 
+## デプロイ
+
+### Renderでのデプロイ方法
+
+1. [Render](https://render.com)にアクセスしてアカウントを作成
+2. New → Web Service を選択
+3. GitHubリポジトリ `https://github.com/ryouryout/ea-deep-research` を接続
+4. 環境変数を設定:
+   - `GOOGLE_API_KEY`: Google Custom Search APIキー
+   - `GOOGLE_CX`: Google Custom Search Engine ID
+   - `CLAUDE_API_KEY`: Anthropic Claude APIキー
+
+### 環境変数の設定
+
+1. `.env.example`を`.env`にコピー
+2. 各APIキーを設定
+
 ## 注意事項
 
 - APIキーは環境変数または設定ファイルで管理してください
 - 本番環境では適切なセキュリティ対策を実施してください
+- APIキーは絶対にGitHubにコミットしないでください
