@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EA Deep Research - AI企業分析ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0f2c 0%, #1a2856 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .subtitle {
+            color: #a8c0ff;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            margin-top: 50px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 18px 25px;
+            font-size: 1.1rem;
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-button {
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .search-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.5);
+        }
+
+        .search-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status-section {
+            margin-top: 50px;
+            display: none;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #4facfe;
+        }
+
+        .progress-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .status-message {
+            font-size: 1rem;
+            color: #a8c0ff;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(79, 172, 254, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #4facfe;
+        }
+
+        .process-steps {
+            margin-top: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(79, 172, 254, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            border: 2px solid rgba(79, 172, 254, 0.5);
+        }
+
+        .step.active .step-icon {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            border-color: transparent;
+        }
+
+        .step-text {
+            flex: 1;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .loading-spinner {
+            display: none;
+            margin: 20px auto;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #4facfe;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .results-section {
+            margin-top: 50px;
+            display: none;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .results-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .slide {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(79, 172, 254, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide:hover {
+            border-color: #4facfe;
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .slide-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .slide-title {
+            flex: 1;
+            margin-left: 20px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .copy-button {
+            padding: 10px 20px;
+            background: rgba(79, 172, 254, 0.2);
+            border: 1px solid rgba(79, 172, 254, 0.5);
+            border-radius: 8px;
+            color: #4facfe;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .copy-button:hover {
+            background: rgba(79, 172, 254, 0.3);
+            transform: scale(1.05);
+        }
+
+        .copy-button.copied {
+            background: rgba(0, 242, 254, 0.2);
+            border-color: #00f2fe;
+            color: #00f2fe;
+        }
+
+        .slide-content {
+            color: #e0e8ff;
+            line-height: 1.8;
+        }
+
+        .slide-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .slide-content li {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        .slide-content li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #4facfe;
+            font-weight: bold;
+        }
+
+        .slide-notes {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.95rem;
+            color: #a8c0ff;
+            font-style: italic;
+        }
+
+        .intermediate-insights {
+            background: rgba(79, 172, 254, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4facfe;
+        }
+
+        .intermediate-insights h4 {
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+
+        .insight-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+
+        .insight-category {
+            font-weight: 600;
+            color: #00f2fe;
+            margin-bottom: 5px;
+        }
+
+        .insight-importance {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        .importance-high {
+            background: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+        }
+
+        .importance-medium {
+            background: rgba(255, 204, 0, 0.2);
+            color: #ffcc00;
+        }
+
+        .importance-low {
+            background: rgba(52, 199, 89, 0.2);
+            color: #34c759;
+        }
+
+        .analysis-depth {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .depth-indicator {
+            display: flex;
+            gap: 5px;
+        }
+
+        .depth-level {
+            width: 8px;
+            height: 30px;
+            background: rgba(79, 172, 254, 0.2);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .depth-level.active {
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .slide-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .slide-title {
+                margin-left: 0;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EA Deep Research</h1>
+            <p class="subtitle">AI駆動型企業分析ツール - 深層的な企業情報リサーチ</p>
+        </header>
+
+        <section class="search-section">
+            <div class="search-box">
+                <h2 style="font-size: 1.5rem; margin-bottom: 10px;">企業分析を開始</h2>
+                <p style="color: #a8c0ff; margin-bottom: 20px;">分析したい企業名を入力してください</p>
+                
+                <form id="searchForm" class="search-form">
+                    <input 
+                        type="text" 
+                        id="companyName" 
+                        class="search-input" 
+                        placeholder="例: トヨタ自動車、ソニー、楽天グループ" 
+                        required
+                    >
+                    <button type="submit" class="search-button" id="searchButton">
+                        分析開始
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section class="status-section" id="statusSection">
+            <div class="status-card">
+                <h3 class="status-title">分析進捗状況</h3>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <div class="process-steps">
+                    <div class="step" id="step1">
+                        <div class="step-icon">1</div>
+                        <div class="step-text">
+                            <strong>基本情報の収集</strong>
+                            <p style="font-size: 0.9rem; color: #8b9dc3;">Google検索で企業の基本情報を収集中...</p>
+                        </div>
+                    </div>
+                    <div class="step" id="step2">
+                        <div class="step-icon">2</div>
+                        <div class="step-text">
+                            <strong>AI分析処理</strong>
+                            <p style="font-size: 0.9rem; color: #8b9dc3;">Claude AIによる情報の整理と分析...</p>
+                        </div>
+                    </div>
+                    <div class="step" id="step3">
+                        <div class="step-icon">3</div>
+                        <div class="step-text">
+                            <strong>深層リサーチ</strong>
+                            <p style="font-size: 0.9rem; color: #8b9dc3;">追加情報の収集と詳細分析...</p>
+                        </div>
+                    </div>
+                    <div class="step" id="step4">
+                        <div class="step-icon">4</div>
+                        <div class="step-text">
+                            <strong>提案骨子作成</strong>
+                            <p style="font-size: 0.9rem; color: #8b9dc3;">提案スライドの構成を生成中...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                
+                <div class="status-message" id="statusMessage">
+                    検索を開始するには、企業名を入力して「分析開始」ボタンをクリックしてください。
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section" id="resultsSection">
+            <div class="results-card">
+                <h3 class="status-title">分析結果</h3>
+                <div class="analysis-depth">
+                    <span>分析深度:</span>
+                    <div class="depth-indicator" id="depthIndicator">
+                        <div class="depth-level" data-level="1"></div>
+                        <div class="depth-level" data-level="2"></div>
+                        <div class="depth-level" data-level="3"></div>
+                        <div class="depth-level" data-level="4"></div>
+                        <div class="depth-level" data-level="5"></div>
+                    </div>
+                    <span id="depthText">0段階</span>
+                </div>
+                <div id="intermediateResults"></div>
+            </div>
+
+            <div class="results-card" id="slidesContainer" style="display: none;">
+                <h3 class="status-title">提案スライド骨子</h3>
+                <div id="slidesContent"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let ws = null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchForm');
+            const companyNameInput = document.getElementById('companyName');
+            const searchButton = document.getElementById('searchButton');
+            const statusSection = document.getElementById('statusSection');
+            const statusMessage = document.getElementById('statusMessage');
+            const progressBar = document.getElementById('progressBar');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const resultsSection = document.getElementById('resultsSection');
+            const intermediateResults = document.getElementById('intermediateResults');
+            const slidesContainer = document.getElementById('slidesContainer');
+            const slidesContent = document.getElementById('slidesContent');
+            const depthIndicator = document.getElementById('depthIndicator');
+            const depthText = document.getElementById('depthText');
+
+            // WebSocket接続を確立
+            function connectWebSocket() {
+                ws = new WebSocket('ws://localhost:3000');
+                
+                ws.onopen = () => {
+                    console.log('WebSocket接続が確立されました');
+                };
+
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    handleWebSocketMessage(data);
+                };
+
+                ws.onerror = (error) => {
+                    console.error('WebSocketエラー:', error);
+                    updateStatus('接続エラーが発生しました。ページを更新してください。');
+                };
+
+                ws.onclose = () => {
+                    console.log('WebSocket接続が切断されました');
+                    setTimeout(connectWebSocket, 3000); // 3秒後に再接続
+                };
+            }
+
+            connectWebSocket();
+
+            function handleWebSocketMessage(data) {
+                switch(data.type) {
+                    case 'status':
+                        updateStatus(data.message, data.step);
+                        if (data.progress) {
+                            progressBar.style.width = data.progress + '%';
+                        }
+                        break;
+                    
+                    case 'intermediate':
+                        displayIntermediateResults(data);
+                        break;
+                    
+                    case 'complete':
+                        displayFinalResults(data);
+                        break;
+                    
+                    case 'error':
+                        handleError(data.message);
+                        break;
+                }
+            }
+
+            function displayIntermediateResults(data) {
+                resultsSection.style.display = 'block';
+                
+                // 分析深度の更新
+                for (let i = 1; i <= data.depth; i++) {
+                    const level = depthIndicator.querySelector(`[data-level="${i}"]`);
+                    if (level) level.classList.add('active');
+                }
+                depthText.textContent = `${data.depth}段階`;
+
+                // 中間結果の表示
+                const insightHtml = `
+                    <div class="intermediate-insights">
+                        <h4>第${data.depth}段階の分析結果</h4>
+                        ${data.insights.map(insight => `
+                            <div class="insight-item">
+                                <div class="insight-category">
+                                    ${insight.category}
+                                    <span class="insight-importance importance-${insight.importance}">
+                                        ${insight.importance === 'high' ? '重要' : insight.importance === 'medium' ? '中' : '低'}
+                                    </span>
+                                </div>
+                                <div>${insight.findings}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                intermediateResults.insertAdjacentHTML('beforeend', insightHtml);
+                resultsSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+
+            function displayFinalResults(data) {
+                loadingSpinner.style.display = 'none';
+                progressBar.style.width = '100%';
+                updateStatus('分析が完了しました！提案スライドが生成されました。', 4);
+                
+                // スライドの表示
+                slidesContainer.style.display = 'block';
+                slidesContent.innerHTML = data.slides.map(slide => `
+                    <div class="slide">
+                        <div class="slide-header">
+                            <div class="slide-number">${slide.slideNumber}</div>
+                            <h4 class="slide-title">${slide.title}</h4>
+                            <button class="copy-button" onclick="copySlideContent(${slide.slideNumber})">
+                                コピー
+                            </button>
+                        </div>
+                        <div class="slide-content" id="slide-content-${slide.slideNumber}">
+                            ${slide.content.main ? `<p>${slide.content.main}</p>` : ''}
+                            ${slide.content.bullets && slide.content.bullets.length > 0 ? `
+                                <ul>
+                                    ${slide.content.bullets.map(bullet => `<li>${bullet}</li>`).join('')}
+                                </ul>
+                            ` : ''}
+                            ${slide.content.notes ? `
+                                <div class="slide-notes">
+                                    <strong>スピーカーノート:</strong> ${slide.content.notes}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+                
+                slidesContainer.scrollIntoView({ behavior: 'smooth' });
+                
+                // 分析完了後のUI更新
+                searchButton.disabled = false;
+                searchButton.textContent = '新しい分析を開始';
+            }
+
+            function handleError(message) {
+                loadingSpinner.style.display = 'none';
+                updateStatus(`エラー: ${message}`, null);
+                searchButton.disabled = false;
+                searchButton.textContent = '分析開始';
+            }
+
+            searchForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const companyName = companyNameInput.value.trim();
+                if (!companyName) {
+                    alert('企業名を入力してください。');
+                    return;
+                }
+
+                // WebSocket接続確認
+                if (!ws || ws.readyState !== WebSocket.OPEN) {
+                    alert('サーバーに接続できません。ページを更新してください。');
+                    return;
+                }
+
+                // UI状態の更新
+                searchButton.disabled = true;
+                searchButton.textContent = '分析中...';
+                statusSection.style.display = 'block';
+                resultsSection.style.display = 'none';
+                slidesContainer.style.display = 'none';
+                intermediateResults.innerHTML = '';
+                slidesContent.innerHTML = '';
+                statusSection.scrollIntoView({ behavior: 'smooth' });
+                loadingSpinner.style.display = 'block';
+
+                // プログレスバーと深度インジケータのリセット
+                progressBar.style.width = '0%';
+                depthIndicator.querySelectorAll('.depth-level').forEach(level => {
+                    level.classList.remove('active');
+                });
+                depthText.textContent = '0段階';
+                
+                // ステップのリセット
+                document.querySelectorAll('.step').forEach(step => {
+                    step.classList.remove('active');
+                });
+
+                // 分析開始
+                ws.send(JSON.stringify({
+                    type: 'analyze',
+                    companyName: companyName
+                }));
+            });
+
+            function updateStatus(message, stepNumber) {
+                statusMessage.textContent = message;
+                if (stepNumber) {
+                    const step = document.getElementById(`step${stepNumber}`);
+                    if (step) {
+                        step.classList.add('active');
+                    }
+                }
+            }
+
+            // スライド内容をコピーする関数
+            window.copySlideContent = function(slideNumber) {
+                const slideContent = document.getElementById(`slide-content-${slideNumber}`);
+                const button = event.target;
+                
+                if (slideContent) {
+                    const textContent = slideContent.innerText;
+                    navigator.clipboard.writeText(textContent).then(() => {
+                        button.textContent = 'コピー済み!';
+                        button.classList.add('copied');
+                        
+                        setTimeout(() => {
+                            button.textContent = 'コピー';
+                            button.classList.remove('copied');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('コピーに失敗しました:', err);
+                        alert('コピーに失敗しました');
+                    });
+                }
+            };
+        });
+    </script>
+</body>
+</html>

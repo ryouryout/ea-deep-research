@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EA Deep Research - AI企業分析ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0f2c 0%, #1a2856 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .subtitle {
+            color: #a8c0ff;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            margin-top: 50px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 18px 25px;
+            font-size: 1.1rem;
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .search-button {
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .search-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.5);
+        }
+
+        .search-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: rgba(255, 204, 0, 0.1);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .info-box h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #ffd633;
+            line-height: 1.6;
+        }
+
+        .info-box code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .demo-section {
+            margin-top: 50px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .demo-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #4facfe;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            color: #00f2fe;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EA Deep Research</h1>
+            <p class="subtitle">AI駆動型企業分析ツール - 深層的な企業情報リサーチ</p>
+        </header>
+
+        <section class="search-section">
+            <div class="search-box">
+                <h2 style="font-size: 1.5rem; margin-bottom: 10px;">企業分析を開始</h2>
+                <p style="color: #a8c0ff; margin-bottom: 20px;">分析したい企業名を入力してください</p>
+                
+                <form id="searchForm" class="search-form">
+                    <input 
+                        type="text" 
+                        id="companyName" 
+                        class="search-input" 
+                        placeholder="例: トヨタ自動車、ソニー、楽天グループ" 
+                        required
+                    >
+                    <button type="submit" class="search-button" id="searchButton">
+                        分析開始
+                    </button>
+                </form>
+
+                <div class="info-box">
+                    <h3>⚠️ サーバー接続が必要です</h3>
+                    <p>
+                        完全な機能を使用するには、サーバーを起動する必要があります。<br>
+                        ターミナルで以下のコマンドを実行してください：
+                    </p>
+                    <p style="margin-top: 10px;">
+                        <code>cd "/Users/takahashiryo/Desktop/EA Deep Research"</code><br>
+                        <code>node server.js</code>
+                    </p>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">
+                        その後、ブラウザで <strong>http://localhost:3000</strong> にアクセスしてください。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="demo-section">
+            <div class="demo-card">
+                <h3 class="demo-title">EA Deep Research の機能</h3>
+                <ul class="feature-list">
+                    <li>Google Search APIによる企業情報の自動収集</li>
+                    <li>Claude AIによる多段階分析（3段階以上の深層分析）</li>
+                    <li>リアルタイムの分析進捗表示（WebSocket使用）</li>
+                    <li>提案スライド骨子の自動生成（10スライド）</li>
+                    <li>各スライドのワンクリックコピー機能</li>
+                    <li>洗練されたUIと滑らかなアニメーション</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('サーバーに接続してください。\n\nターミナルで以下を実行:\ncd "/Users/takahashiryo/Desktop/EA Deep Research"\nnode server.js\n\nその後 http://localhost:3000 にアクセスしてください。');
+        });
+    </script>
+</body>
+</html>
